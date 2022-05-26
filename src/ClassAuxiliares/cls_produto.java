@@ -25,7 +25,7 @@ public class cls_produto {
     public double get_valor() {
         return _valor;
     }
-
+ 
     //definindo valores
     public void set_valor(double _valor) {
         this._valor = _valor;
@@ -42,7 +42,7 @@ public class cls_produto {
     
     @Override
     public String toString() {
-        return "produto [_codigo=" + _codigo + ", _nome=" + _nome + ", _qtde=" + _qtde + ", _valor=" + _valor + "]";
+        return "Codigo: " + _codigo + " - Nome: " + _nome + " - Valor: " + _valor + " - Quantidade: " +_qtde;
     }
 
     

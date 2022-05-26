@@ -9,6 +9,7 @@ public class cls_vendas {
     
     
     public cls_vendas(LocalDate _dataVenda, String _prdVendido, int _qdtProduto) throws  Exception {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         this._dataVenda = _dataVenda;
         this._prdVendido = _prdVendido;
         this._qdtProduto = _qdtProduto;
@@ -32,9 +33,11 @@ public class cls_vendas {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         this._dataVenda = _dataVenda;
     }
+
     @Override
     public String toString() {
-        return "vendas [_dataVenda=" + _dataVenda + ", _prdVendido=" + _prdVendido + "]";
+        return "cls_vendas [_dataVenda=" + _dataVenda + ", _prdVendido=" + _prdVendido + ", _qdtProduto=" + _qdtProduto
+                + "]";
     }
     
     

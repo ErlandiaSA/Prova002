@@ -1,11 +1,18 @@
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.function.IntToDoubleFunction;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import ClassAuxiliares.cls_produto;
 import ClassAuxiliares.cls_vendas;
+
 
 public class App {
     private final static int TAMANHO_INICIAL_LISTAS = 10;
@@ -15,7 +22,9 @@ public class App {
     private static int _nmProdutos = 0;
     private static int _nmVendas = 0;
 
-    private static Scanner sc = new Scanner(System.in);   
+    private static Scanner sc = new Scanner(System.in);  
+    
+    public static List<cls_vendas> rlvendas = new ArrayList<>();  
 
     public static void main(String[] args) throws Exception {
 
@@ -99,11 +108,26 @@ public class App {
             }
             //1 - Listar produtos
             case 1: {
-                
+                listarProdutos();
                 break;
             }
             //2 - Consultar Produtos
-            case 2: {                
+            case 2: {  
+                System.out.println("Digite o nome do produto para a busca:");
+                String oPrd = sc.nextLine();
+                cls_produto meupProduto = buscarproduto(oPrd);       
+                if (meupProduto != null) {
+                    System.out.println("\n************************************************************************************************\n");                    
+                    System.out.println("*** Resultado da busca *************************************************************************");
+                    System.out.println("\n************************************************************************************************");
+                    System.out.println("*** Produto encontrado *************************************************************************\n");
+                    System.out.println("Resultado da busca: " + meupProduto + "\n");
+                    System.out.println("************************************************************************************************\n");
+                    System.out.println("Pressione Enter para continuar ");
+                    sc.nextLine();
+                    System.out.println("************************************************************************************************\n");
+                    break;
+                }                                          
                 break;
             }
             //3 - Incluir Produto
@@ -128,7 +152,41 @@ public class App {
                 break;
             }
             //2 - Consultar vendas por periodo - Detalhado
-            case 2: {                
+            case 2: {      
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                
+                System.out.println("Data Inicial ex: [dd/mm/aaaa]:");            
+                LocalDate dtInicio = LocalDate.parse(sc.nextLine(), dtf);  
+                System.out.println("Data Final ex: [dd/mm/aaaa]:");               
+                LocalDate dtFim = LocalDate.parse(sc.nextLine(), dtf);
+
+                // for (int i = 0; i < _nmVendas; i++) {
+                //     List<cls_vendas> rlvendas = new ArrayList<>();                    
+                //     rlvendas.add(new cls_vendas(_mnhVnd[i].get_dataVenda(), _mnhVnd[i].get_prdVendido(), _mnhVnd[i].get_qdtProduto()));                    
+                    
+                //     //System.out.println(_mnhVnd[i]);
+                // }
+
+                
+
+                //Collection<cls_vendas> rlvendas;
+                // List<cls_vendas> vdasfiltro = rlvendas.stream().filter(p -> p instanceof cls_vendas && ((p.get_dataVenda >= dtInicio) && (p.get_dataVenda <= dtFim))).collect(Collectors.toList());
+                // vdasfiltro.forEach(System.out::println);
+
+                // Map<LocalDate, List<cls_vendas>> vendasData = rlvendas.stream()
+                // .collect(groupingBy(cls_vendas::getData));
+                // //Map<LocalDate, List<cls_vendas>> vendasDatas = rlvendas.stream().collect(groupingBy(cls_vendas::getData));
+                // vendasData.entrySet().forEach(item -> System.out.printf("Dia %s: - Vendas: %s\n", item.getKey().format(dtf),item.getValue()));
+               
+ 
+                // System.out.println("----------------------------------------------------------------------------------\n");
+                // System.out.println("Pressione Enter para continuar:");
+                // sc.nextLine();
+
+                
+                // List<cls_vendas> cls_venda new cls_vendas(_mnhVnd[i].get_dataVenda(), _mnhVnd[i].get_prdVendido(), _mnhVnd[i].get_qdtProduto());
+                               
+
                 break;
             }
             //3 - Consultar Vendas por periodo - Consolidado
@@ -163,7 +221,7 @@ public class App {
 
     private static void MenuRelatorio() {
         System.out.println("************************************************************************************************\n");
-        System.out.println("***************************************   MENU RELATÓRIO   *************************************\n");
+        System.out.println("***************************************   MENU VENDAS   ****************************************\n");
         System.out.println("************************************************************************************************\n");
 
         System.out.println("1 - Realizar vendas");
@@ -191,9 +249,11 @@ public class App {
         cls_produto _meuPrd = new cls_produto(cdPrd, nomePrd, vlrPrd,  qtdPrd);
         addProdutoNaLista(_meuPrd);
 
-        System.out.println("Produto cadastrado com sucesso....");
+        System.out.println("\n************************************************************************************************");
+        System.out.println("***  Produto cadastrado com sucesso  ***********************************************************\n");
         System.out.println("Pressione Enter para continuar:");
         sc.nextLine();
+        System.out.println("\n************************************************************************************************");
     }
 
     private static void addProdutoNaLista(cls_produto produto) {
@@ -219,17 +279,54 @@ public class App {
         System.out.println("************************************   Cadastro de Venda   *************************************\n");
         System.out.println("************************************************************************************************\n");
         System.out.println("");
-        System.out.println("Digite a data do dia ex: dd/mm/aaaa:");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        LocalDate dataDia = LocalDate.parse(sc.nextLine(), dtf);
+        
         System.out.println("Digite o nome do produto:");
         String nomePrd = sc.nextLine();
-        System.out.println("Digite a quantidade vendida:");
-        int qdtVnd = Integer.parseInt(sc.nextLine());        
 
-        cls_vendas _meuPrd = new cls_vendas(dataDia, nomePrd, qdtVnd);
-        addVendaNaLista(_meuPrd);
+        cls_produto meupProduto = buscarproduto(nomePrd);       
+        if (meupProduto != null) {
+            System.out.println("\n************************************************************************************************\n");                    
+            System.out.println("*** Produto encontrado, por favor verifique a quantidade disponivel ****************************\n");
+            System.out.println("Resultado da busca: " + meupProduto + "\n");
+            
+            System.out.println("Deseja seguir com a venda, responda (S: Sim) ");
+            
+            String rsp = sc.nextLine();
+
+            if (rsp.toUpperCase().equals("S")) {
+                System.out.println("Digite a data do dia ex: dd/mm/aaaa:");
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                LocalDate dataDia = LocalDate.parse(sc.nextLine(), dtf);
+
+                System.out.println("Digite a quantidade vendida:");
+                int qdtVnd = Integer.parseInt(sc.nextLine());      
+                if ((meupProduto.get_qtde() - qdtVnd) >=0 ) { 
+
+                    rlvendas.add(new cls_vendas(dataDia, nomePrd, qdtVnd));                    
+                    
+                    meupProduto.set_qtde(meupProduto.get_qtde() - qdtVnd);
+                    cls_vendas _meuPrd = new cls_vendas(dataDia, nomePrd, qdtVnd);
+                    addVendaNaLista(_meuPrd);
+
+                    System.out.println("\n************************************************************************************************\n");
+                    System.out.println("***  Venda realizada com sucesso ***************************************************************");
+                    System.out.println("Pressione Enter para continuar:");
+                    sc.nextLine();
+                    System.out.println("************************************************************************************************\n");                                
+                } else {
+                    System.out.println("************************************************************************************************\n");  
+                    System.out.println("Quantidade em estoque insuficiente! Por favor, fique atento a quantidade disponivel e tente novamente");
+                    System.out.println("Pressione Enter para continuar:");
+                    sc.nextLine();
+                }
+
+                
+            } else {
+                System.out.println("Resposta diferente de S, finalizando operação....");
+                sc.nextLine();
+            }
+            
+        }        
     }
 
     private static void addVendaNaLista(cls_vendas vendas) {
@@ -248,6 +345,39 @@ public class App {
         // Adiciono o piloto a lista.
         _mnhVnd[_nmVendas] = vendas;
         _nmVendas++;
+    }
+
+    private static void listarProdutos() {
+        System.out.println("************************************************************************************************\n");
+        System.out.println("***  Lista de produtos cadastrados  **********************************************************\n");
+        System.out.println("************************************************************************************************\n");
+        System.out.println("     Código         Nome               Valor (R$)                      Estoque");
+        System.out.println("----------------------------------------------------------------------------------\n");
+        
+        //System.out.println("Lista de produtos cadastrados:");
+        for (int i = 0; i < _nmProdutos; i++) {
+            System.out.printf("      %s            %s                %.2f                          %d %n", _meuPrd[i].get_codigo(), _meuPrd[i].get_nome(), _meuPrd[i].get_valor(), _meuPrd[i].get_qtde());
+            
+            //System.out.println(_meuPrd[i]);
+        }
+        System.out.println("----------------------------------------------------------------------------------\n");
+        System.out.println("Pressione Enter para continuar:");
+        sc.nextLine();
+    }
+
+    private static cls_produto buscarproduto(String nmProduto) throws Exception {
+        try {        
+            for (cls_produto meuPrd: _meuPrd) {
+                if (meuPrd != null && meuPrd.get_nome().equals(nmProduto)) {
+                    return meuPrd;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+
+        //throw new Exception(e.getMessage());
     }
 
     private static boolean validarOpcaoMenu(int opcao) {
